@@ -1,0 +1,32 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "input_method": "stdin",
+  "description": "Node info source remove",
+  "parameters": {
+    "feed_type": {
+      "description": "Feed type a meaningful consistency free text like cmdb, snapshot, vsphere etc.",
+      "type": "String[1]",
+      "default": "common"
+    },
+    "key_field": {
+      "description": "Key field value to clear.",
+      "type": "Optional[String]"
+    },
+    "exclude_key_field": {
+      "description": "Exclude key fiel value",
+      "type": "Optional[Array[String]]",
+      "default": []
+    },
+    "target_dir": {
+      "description": "Target node_info validated directory.",
+      "type": "Optional[String]",
+      "default": "/var/puppetlabs/data/node_info/validated"
+    },
+    "refresh_node_info_on_removed_source": {
+      "description": "Refresh removed node info if any source removed.",
+      "type": "Optional[Boolean]",
+      "default": true
+    }
+  }
+}

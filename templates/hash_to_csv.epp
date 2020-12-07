@@ -1,0 +1,7 @@
+<%- | String $key,
+      Optional $data 
+| -%>
+<% $header = $data[0][$key] -%>
+certname,<%= join($header.keys(),',') -%>
+<% $data.each |$d| { %>
+<%= $d['certname'] %>,<% $header.keys().each|$h| { %><%= $d[$key][$h] %>,<% }} %>

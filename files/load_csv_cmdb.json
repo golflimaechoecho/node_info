@@ -1,0 +1,6 @@
+{ 
+  "csv_filename": "/var/puppetlabs/data/node_info/in/cmdb_data.csv",
+  "feed_type": "cmdb",
+  "key_field": "server_name", 
+  "skipped_field": ["hostname","vm"]
+}

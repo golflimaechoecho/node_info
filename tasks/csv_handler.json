@@ -1,0 +1,42 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "input_method": "stdin",
+  "description": "CSV handler",
+  "parameters": {
+    "csv_filename": {
+      "description": "Absolute source CSV filename.",
+      "type": "String[1]"
+    },
+    "feed_type": {
+      "description": "Feed type , like: cmdb, snapshot or common",
+      "type": "String[1]"
+    },
+    "key_field": {
+      "description": "Valid CSV header key identifier, like: hostname.",
+      "type": "String[1]"
+    },
+    "target_dir": {
+      "description": "Target node_info validated directory.",
+      "type": "Optional[String]"
+    },
+    "err_target_dir": {
+      "description": "Target node_info err/out directory.",
+      "type": "Optional[String]"
+    },
+    "basename": {
+      "description": "Allow multiple line",
+      "type": "Optional[Boolean]",
+      "default": true
+    },
+    "multiple": {
+      "description": "Allow multiple line",
+      "type": "Optional[Boolean]",
+      "default": false
+    },
+    "skipped_field": {
+      "description": "Skipped unwanted column",
+      "type": "Optional[Array[String]]"
+    }
+  }
+}

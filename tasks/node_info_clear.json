@@ -1,0 +1,8 @@
+{
+  "input_method": "stdin",
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Clear node_info fact",
+  "parameters": {
+  }
+}

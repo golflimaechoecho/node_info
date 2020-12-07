@@ -1,0 +1,104 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "input_method": "stdin",
+  "description": "Puppet job run",
+  "parameters": {
+    "ensure": {
+      "description": "Present or absent",
+      "type": "Optional[Enum[present,absent]]"
+    },
+    "environment": {
+      "description": "Puppet environment",
+      "type": "Optional[String]"
+    },
+    "scope": {
+      "description": "Object, required unless target is specified. The PuppetDB query, a list of nodes, a classifier node group id, or an application/application instance to deploy.",
+      "type": "Optional[Hash]"
+    },
+    "description": {
+      "description": "Description of job run.",
+      "type": "Optional[String]"
+    },
+    "noop": {
+      "description": "Whether to run the agent in no-op mode. The default is false.",
+      "type": "Optional[Boolean]"
+    },
+    "no_noop": {
+      "description": "Whether to run the agent in enforcement mode. Defaults to false. This flag overrides noop = true if set in the agent's puppet.conf, and cannot be set to true at the same time as the noop flag.",
+      "type": "Optional[Boolean]"
+    },
+    "concurrency": {
+      "description": "The maximum number of nodes to run at one time.",
+      "type": "Optional[Integer]"
+    },
+    "enforce_environment": {
+      "description": "Whether to force agents to run in the same environment in which their assigned applications are defined.",
+      "type": "Optional[Boolean]"
+    },
+    "debug": {
+      "description": "Whether to use the --debug flag on Puppet agent runs.",
+      "type": "Optional[Boolean]"
+    },
+    "trace": {
+      "description": "whether to use the --trace flag on Puppet agent runs.",
+      "type": "Optional[Boolean]"
+    },
+    "filetimeout": {
+      "description": "Sets the --filetimeout flag on Puppet agent runs to the provided value.",
+      "type": "Optional[Boolean]"
+    },
+    "http_connect_timeout": {
+      "description": "Sets the --http_connect_timeout flag on Puppet agent runs to the provided value.",
+      "type": "Optional[Integer]"
+    },
+    "http_keepalive_timeout": {
+      "description": "Sets the --http_keepalive_timeout flag on Puppet agent runs to the provided value.",
+      "type": "Optional[Integer]"
+    },
+    "http_read_timeout": {
+      "description": "Sets the --http_read_timeout flag on Puppet agent runs to the provided value.",
+      "type": "Optional[Integer]"
+    },
+    "ordering": {
+      "description": "Sets the --ordering flag on Puppet agent runs to the provided value.",
+      "type": "Optional[String]"
+    },
+    "skip_tags": {
+      "description": "Sets the --skip_tags flag on Puppet agent runs to the provided value.",
+      "type": "Optional[String]"
+    },
+    "tags": {
+      "description": "Sets the --tags flag on Puppet agent runs to the provided value.",
+      "type": "Optional[String]"
+    },
+    "use_cached_catalog": {
+      "description": "Sets the --tags flag on Puppet agent runs to the provided value.",
+      "type": "Optional[Boolean]"
+    },
+    "usecacheonfailure": {
+      "description": "Sets the --tags flag on Puppet agent runs to the provided value.",
+      "type": "Optional[Boolean]"
+    },
+    "target": {
+      "description": "Required unless scope is specified. This key is deprecated.",
+      "type": "Optional[Array]"
+    },
+    "name": {
+      "description": "Job id.",
+      "type": "Optional[Integer]"
+    },
+    "connected_only": {
+      "description": "Connected nodes only.",
+      "type": "Optional[Boolean]"
+    },
+    "node_group": {
+      "description": "Node group name.",
+      "type": "Optional[String]"
+    },
+    "puppet_master": {
+      "description": "Puppet master with classifer",
+      "type": "Optional[String]"
+    }
+  }
+}

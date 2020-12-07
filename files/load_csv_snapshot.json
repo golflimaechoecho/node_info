@@ -1,0 +1,6 @@
+{ 
+  "csv_filename": "/var/puppetlabs/data/node_info/in/vsphere_snapshot.csv",
+  "feed_type": "snapshot",
+  "key_field": "hostname", 
+  "skipped_field": ["hostname","vm"]
+}
