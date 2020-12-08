@@ -57,7 +57,7 @@ plan node_info::load_csv (
         $nodes_refresh = regsubst($nodes_refresh_data[0].split(':')[1], '[\[\] "]', '','G').split(',')
         unless $nodes_refresh.empty {
           $pdb = "facts[certname] { name = \"${facts_lookup_field}\" and 
-                                    value ~ \"(?i)${nodes_refresh.map |$k| { "${k}$|" }}\"
+                                    value ~ \"(?i)${nodes_refresh.map |$k| { "${k}$" }.join('|')}\"
                                     limit ${$puppetdb_query_limit} }"
           if $debug == true { out::message("pdb: ${pdb}") }
           $certname_refresh = puppetdb_query($pdb).map |$k| { $k['certname'] }
