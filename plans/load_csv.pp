@@ -47,7 +47,7 @@ plan node_info::load_csv (
             )
   $outs_result = $load_r.find($nodes).message()
 
-  if $debug == true == true { out::message('node_info: update node_info_source fact') }
+  if $debug == true { out::message('node_info: update node_info_source fact') }
   if $load_r.ok {
 
     # Trigger post puppet run on generated source_clear
@@ -59,9 +59,8 @@ plan node_info::load_csv (
           $pdb = "facts[certname] { name = \"${facts_lookup_field}\" and 
                                     value ~ \"(?i)${nodes_refresh.map |$k| { "${k}$|" }}\"
                                     limit ${$puppetdb_query_limit} }"
-          if $debug == true == true { out::message("pdb: ${pdb}") }
+          if $debug == true { out::message("pdb: ${pdb}") }
           $certname_refresh = puppetdb_query($pdb).map |$k| { $k['certname'] }
-          if $debug == true == true { out::message("job_run: ${certname_refresh}") }
           unless $certname_refresh.empty {
             $load_r1 = run_task  (
                         'node_info::ensure_job_run', $nodes,
