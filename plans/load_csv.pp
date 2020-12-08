@@ -26,13 +26,13 @@ plan node_info::load_csv (
                       post_puppet_run = ${post_puppet_run}
                       facts_lookup_field = ${facts_lookup_field}
                       puppetdb_query_limit = ${puppetdb_query_limit}
-                      remove_existing_source_feed_type = ${remove_existing_source_feed_type}")
+                      remove_existing_source_feed_type = ${remove_existing_source_feed_type}
+                      debug = ${debug}")
 
   if $remove_existing_source_feed_type {
     run_plan('node_info::source_clear','feed_type' => $feed_type )
   }
 
-  if $debug { out::message('node_info: trigger csv_handler task') }
   $load_r = run_task  (
               'node_info::csv_handler',
               $nodes,
@@ -47,7 +47,7 @@ plan node_info::load_csv (
             )
   $outs_result = $load_r.find($nodes).message()
 
-  if $debug { out::message('node_info: update node_info_source fact') }
+  if $debug == true == true { out::message('node_info: update node_info_source fact') }
   if $load_r.ok {
 
     # Trigger post puppet run on generated source_clear
@@ -59,9 +59,9 @@ plan node_info::load_csv (
           $pdb = "facts[certname] { name = \"${facts_lookup_field}\" and 
                                     value ~ \"(?i)${nodes_refresh.map |$k| { "${k}$|" }}\"
                                     limit ${$puppetdb_query_limit} }"
-          if $debug { out::message("pdb: ${pdb}") }
+          if $debug == true == true { out::message("pdb: ${pdb}") }
           $certname_refresh = puppetdb_query($pdb).map |$k| { $k['certname'] }
-          if $debug { out::message("job_run: ${certname_refresh}") }
+          if $debug == true == true { out::message("job_run: ${certname_refresh}") }
           unless $certname_refresh.empty {
             $load_r1 = run_task  (
                         'node_info::ensure_job_run', $nodes,
