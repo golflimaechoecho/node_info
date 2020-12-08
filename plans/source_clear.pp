@@ -33,7 +33,7 @@ plan node_info::source_clear (
       $nodes_refresh = ($nodes_refresh_data[0].split('=')[1]).split(',')
       unless $nodes_refresh.empty {
         $pdb = "facts[certname] { name = \"${facts_lookup_field}\" and 
-                                  value in ${nodes_refresh.map |$k| { "\"${k}\"" }} 
+                                  value ~ \"(?i)${nodes_refresh.map |$k| { "${k}$" }.join('|')}\"
                                   limit ${$puppetdb_query_limit} }"
         $certname_refresh = puppetdb_query($pdb).map |$k| { $k['certname'] }
         if $debug { out::message("job_run: ${certname_refresh}") }
