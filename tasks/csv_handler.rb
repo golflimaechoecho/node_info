@@ -105,9 +105,9 @@ elsif !hash_data.empty?
       current_data = JSON.parse(File.read(filename)) if File.file?(filename)
       if multiple == false && proceeded_key_field.include?(keyfield)
         dup_key_field << keyfield
-      elsif current_data && current_data.is_a?(Hash) && current_data == d
+      elsif current_data&.is_a?(Hash) && current_data == d
         unchanged_count += 1
-      elsif current_data && current_data.is_a?(Array) && current_data.any? { |h| h == d }
+      elsif current_data&.is_a?(Array) && current_data.any? { |h| h == d }
         unchanged_count += 1
       else
         if multiple == true && current_data

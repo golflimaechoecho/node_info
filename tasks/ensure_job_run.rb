@@ -147,7 +147,7 @@ if puppet_ensure == 'present'
 elsif puppet_ensure == 'absent'
   if description
     jobs1 = jobs.select { |_k, v| v['description'] == description }
-    jobs1.keys.each do |l1|
+    jobs1.each_key do |l1|
       job_query = {}
       job_query['job'] = l1
       url = URI("https://#{puppet_master}:8143/orchestrator/v1/command/stop")

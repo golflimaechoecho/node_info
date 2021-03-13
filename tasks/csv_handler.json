@@ -25,7 +25,7 @@
       "type": "Optional[String]"
     },
     "basename": {
-      "description": "Allow multiple line",
+      "description": "Select basename on key_field",
       "type": "Optional[Boolean]",
       "default": true
     },
