@@ -1,8 +1,8 @@
 {
   "name": "cheehuan-node_info",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "cheehuan",
-  "summary": "Prepare node specific information fact, like CMDB, cloud",
+  "summary": "Prepare node fact using CSV files",
   "license": "MIT",
   "source": "https://github.com/cheehuan/node_info",
   "dependencies": [
@@ -61,10 +61,10 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.10.0 < 7.0.0"
+      "version_requirement": ">= 6.0.0 < 8.0.0"
     }
   ],
-  "pdk-version": "2.0.0",
-  "template-url": "pdk-default#2.0.0",
-  "template-ref": "tags/2.0.0-0-ge838f1d"
+  "pdk-version": "2.1.0",
+  "template-url": "pdk-default#2.1.0",
+  "template-ref": "tags/2.1.0-0-ga675ea5"
 }

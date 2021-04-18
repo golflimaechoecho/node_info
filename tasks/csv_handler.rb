@@ -7,9 +7,12 @@ require 'json'
 require 'digest/sha1'
 require 'puppet'
 
-now = Time.new
-params = JSON.parse(STDIN.read)
+result = {}
+result['exit_code'] = 0
 
+now = Time.new
+
+params          = JSON.parse(STDIN.read)
 # Set parameters to local variables and resolve defaults if required
 csv_filename    = params['csv_filename']
 target_dir      = params['target_dir'] || '/var/puppetlabs/data/node_info/validated'
@@ -20,6 +23,7 @@ basename        = params['basename']
 multiple        = params['multiple']
 enconding       = params['enconding'] || 'windows-1251' # 'iso-8859-1'
 skipped_field   = params['skipped_field'] || []
+result['in']    = params
 
 def sanitize_filename(filename)
   fn = filename.split %r{(?<=.)\.(?=[^.])(?!.*\.[^.])}m
@@ -50,7 +54,11 @@ def output_err(filename, content)
 end
 
 unless csv_filename && File.exist?(csv_filename)
-  puts 'Ensure csv_filename exist.'
+  result[:_error] = { msg: 'Ensure csv_filename exist.',
+                      kind: 'cheehuan-node_info/file_not_found',
+                      details: { csv_filename: csv_filename } }
+  result['exit_code'] = 1
+  puts result.to_json
   exit 1
 end
 
@@ -63,13 +71,22 @@ begin
                       encoding: "#{enconding}:utf-8")
   hash_data = csv_data.map { |row| row.to_hash }
 rescue StandardError => e
-  puts "Invalid CSV file #{csv_filename} - #{e}"
+  result[:_error] = { msg: 'Invalid CSV file format.',
+                      kind: 'cheehuan-node_info/invalid_csvformat',
+                      details: { csv_filename: csv_filename } }
+  result['error_data'] = e
+  result['exit_code'] = 1
+  puts result.to_json
   exit 1
 end
 
 if hash_data && hash_data[0] && !hash_data[0].keys.include?(key_field)
-  puts "CSV Header: #{hash_data[0].keys}"
-  puts "key_field #{key_field} not found in CSV header."
+  result['out'] = "CSV Header: #{hash_data[0].keys}"
+  result[:_error] = { msg:  "key_field #{key_field} not found in CSV header.",
+                      kind: 'cheehuan-node_info/missing_keyfield',
+                      details: { key_field: key_field } }
+  result['exit_code'] = 1
+  puts result.to_json
   exit 1
 elsif !hash_data.empty?
   write_count = 0
@@ -82,8 +99,8 @@ elsif !hash_data.empty?
   err_out = []
   fail_output_file = "#{err_target_dir}/#{feed_type}_#{now.strftime('%Y%m%d%H%m')}.csv"
 
-  puts "\nParse data count: #{hash_data.size}"
-  puts "CSV Header: #{hash_data[0].keys}"
+  result['out'] = { 'csv_header' => hash_data[0].keys }
+  result['out']['total_size'] = hash_data.size
 
   hash_data.each do |d|
     unless d[key_field]
@@ -129,22 +146,24 @@ elsif !hash_data.empty?
     proceeded_key_field << keyfield
   end
 
-  puts "\nUnchanged: #{unchanged_count}"
-  puts "Changed: #{changed_key_field.size}"
-  puts "Multiple: #{dup_key_field.size}" if multiple == true
-  puts "Duplicate: #{dup_key_field.size}" if multiple == false
-  puts "Error: #{error_count}"
-  puts "New: #{write_count}"
+  result['out']['unchanged'] = unchanged_count
+  result['out']['changed'] = changed_key_field.size
+  result['out']['multiple'] = dup_key_field.size if multiple == true
+  result['out']['duplicate'] = dup_key_field.size if multiple == false
+  result['out']['error'] = error_count
+  result['out']['new'] = write_count
 
-  puts "\nGenerated keyfield: #{gen_key_field}"
-  puts "\nChanged keyfield: #{changed_key_field}"
-  puts "Multiple keyfield: #{dup_key_field}" if !dup_key_field.empty? && multiple == true
-  puts "Duplicate keyfield: #{dup_key_field}" if !dup_key_field.empty? && multiple == false
+  result['data'] = { 'generated' => gen_key_field }
+  result['data']['changed'] = changed_key_field
+  result['data']['multiple'] = dup_key_field if !dup_key_field.empty? && multiple == true
+  result['data']['duplicate'] = dup_key_field if !dup_key_field.empty? && multiple == false
 
-  puts "\nError output: fail entry write into #{fail_output_file}\n" unless err_out.empty?
   unless err_out.empty?
-    err_out.each do |err|
-      puts "  #{err}"
-    end
+    result[:_error] = { msg:  'error write output file.',
+                        kind: 'cheehuan-node_info/unknown',
+                        details: { fail_output_file: fail_output_file,
+                                   data: err_out } }
   end
+
+  puts result.to_json
 end

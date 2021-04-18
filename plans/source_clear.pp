@@ -18,7 +18,6 @@ plan node_info::source_clear (
                       target_dir  = ${target_dir}
                       refresh_node_info_on_removed_source = ${refresh_node_info_on_removed_source}}")
 
-  if $debug { out::message('source_clear: node_info_source_clear task') }
   $load_r = run_task  (
               'node_info::node_info_source_clear', $nodes,
               'feed_type'                           => $feed_type,
@@ -28,26 +27,28 @@ plan node_info::source_clear (
               'refresh_node_info_on_removed_source' => $refresh_node_info_on_removed_source,
             )
   if $load_r.ok and $puppet_run_refreshed_nodes {
-    $nodes_refresh_data = $load_r.find($nodes).message().split('\n').filter |$n| { $n =~ /nodes_refresh=/ }
-    if $nodes_refresh_data.size > 0 and $nodes_refresh_data[0].split('=').size > 1 {
-      $nodes_refresh = ($nodes_refresh_data[0].split('=')[1]).split(',')
-      unless $nodes_refresh.empty {
-        $pdb = "facts[certname] { name = \"${facts_lookup_field}\" and 
-                                  value ~ \"(?i)${nodes_refresh.map |$k| { "${k}$" }.join('|')}\"
-                                  limit ${$puppetdb_query_limit} }"
-        $certname_refresh = puppetdb_query($pdb).map |$k| { $k['certname'] }
-        if $debug { out::message("job_run: ${certname_refresh}") }
-        unless $certname_refresh.empty {
-          $load_r1 = run_task  (
-                      'node_info::ensure_job_run', $nodes,
-                      'ensure'        => 'present',
-                      'description'   => 'source_clear - node info refresh run',
-                      'scope'         => { 'nodes' => $certname_refresh },
-                      'puppet_master' => $nodes,
-                    )
-        }
+    if $debug { out::message("tasks resultset: ${load_r.find($nodes)}") }
+    $nodes_refresh = pick(($load_r.find($nodes).value)['data']['nodes_refresh'], [])
+    if $debug { out::message("nodes_refresh yaml: ${nodes_refresh}") }
+
+    unless $nodes_refresh.empty {
+      $pdb = "facts[certname] { name = \"${facts_lookup_field}\" and 
+                                value ~ \"(?i)${nodes_refresh.map |$k| { "${k}$" }.join('|')}\"
+                                limit ${$puppetdb_query_limit} }"
+      $certname_refresh = puppetdb_query($pdb).map |$k| { $k['certname'] }
+      if $debug { out::message("job_run: ${certname_refresh}") }
+      unless $certname_refresh.empty {
+        $load_r1 = run_task  (
+                    'node_info::ensure_job_run', $nodes,
+                    'ensure'        => 'present',
+                    'description'   => 'source_clear - node info refresh run',
+                    'scope'         => { 'nodes' => $certname_refresh },
+                    'expected_state'  => [ 'finished', 'failed' ],
+                    'puppet_master' => $nodes,
+                  )
       }
     }
   }
-  return $load_r.find($nodes).message()
+
+  return "Run succeeded: ${pick(($load_r.find($nodes).value)['out'],'')}"
 }

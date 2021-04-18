@@ -1,25 +1,20 @@
 # plan export csv file
 plan node_info::export_csv (
-  Array[String]                   $facts_list           = ['facts.node_info.cmdb'],
+  Array[String]                   $facts_list           = ['node_info.cmdb'],
   Optional[Stdlib::Absolutepath]  $target_dir           = '/var/puppetlabs/data/node_info/out',
   Optional[Integer]               $puppetdb_query_limit = 2000,
-  Optional[Boolean]               $debug                = true,
+  Optional[Boolean]               $debug                = false,
 ) {
   $nodes = puppetdb_query('inventory[facts.puppet_server] { facts.pe_build is not null limit 1}')[0]['facts.puppet_server']
 
-  $facts_list.each |$k| {
-    if $debug { out::message("node_info: retreive fact nodes ${k}") }
-    $nodes_fact =
-      puppetdb_query( "inventory[
-                        certname,
-                        ${k}
-                      ] { ${k} is not null limit ${$puppetdb_query_limit} }"
-                    )
+  out::message("Parameters: facts_list = ${facts_list}
+                            target_dir = ${target_dir}
+                            puppetdb_query_limit = ${puppetdb_query_limit}
+                            debug = ${debug}")
 
-    if $nodes_fact.empty {
-      out::message("node_info: no ${k} records")
-    } else {
-      out::message("node_info: ${k} - ${nodes_fact.size} founds")
+  $facts_list.each |$k| {
+    $nodes_fact = puppetdb_query( "inventory[certname, facts.${k}] { facts.${k} is not null limit ${$puppetdb_query_limit} }" )
+    unless $nodes_fact.empty {
       apply($nodes) {
         file { $target_dir:
           ensure => directory,
@@ -33,9 +28,12 @@ plan node_info::export_csv (
           group    => 'root',
           mode     => '0644',
           loglevel => 'debug',
-          content  => epp('node_info/hash_to_csv.epp', { 'data'  => $nodes_fact, 'key' => $k }  )
+          content  => epp('node_info/hash_to_csv.epp', { 'data'  => $nodes_fact, 'key' => "facts.${k}" }  )
         }
       }
+      out::message("exported: ${target_dir}/${k}.csv - ${nodes_fact.size} records")
+    } else {
+      out::message("fact: ${k} no record found")
     }
   }
 }

@@ -14,7 +14,6 @@ plan node_info::load_csv (
   Optional[Boolean]               $debug                                = false,
 ) {
   $nodes = puppetdb_query('inventory[facts.puppet_server] { facts.pe_build is not null limit 1}')[0]['facts.puppet_server']
-  #without_default_logging() || { run_plan('facts', 'targets' => $nodes) }
   without_default_logging() || { run_plan('puppetdb_fact', 'targets' => $nodes) }
 
   out::message("Parameters: csv_filename = ${csv_filename}
@@ -45,31 +44,30 @@ plan node_info::load_csv (
               'skipped_field'                       => $skipped_field,
               _catch_errors                         => true
             )
-  $outs_result = $load_r.find($nodes).message()
+  $message = pick(($load_r.find($nodes).value)['out'], '')
 
   if $debug == true { out::message('node_info: update node_info_source fact') }
   if $load_r.ok {
-
     # Trigger post puppet run on generated source_clear
     if $post_puppet_run == true {
-      $nodes_refresh_data = $load_r.find($nodes).message().split('\n').filter |$n| { $n =~ /Generated keyfield:/ }
-      if $nodes_refresh_data.size > 0 and $nodes_refresh_data[0].split(':').size > 1 {
-        $nodes_refresh = regsubst($nodes_refresh_data[0].split(':')[1], '[\[\] "]', '','G').split(',')
-        unless $nodes_refresh.empty {
-          $pdb = "facts[certname] { name = \"${facts_lookup_field}\" and 
-                                    value ~ \"(?i)${nodes_refresh.map |$k| { "${k}$" }.join('|')}\"
-                                    limit ${$puppetdb_query_limit} }"
-          if $debug == true { out::message("pdb: ${pdb}") }
-          $certname_refresh = puppetdb_query($pdb).map |$k| { $k['certname'] }
-          unless $certname_refresh.empty {
-            $load_r1 = run_task  (
-                        'node_info::ensure_job_run', $nodes,
-                        'ensure'        => 'present',
-                        'description'   => 'load_csv - post puppet run',
-                        'scope'         => { 'nodes' => $certname_refresh },
-                        'puppet_master' => $nodes,
-                      )
-          }
+      $nodes_refresh = pick(($load_r.find($nodes).value)['data']['generated'], [])
+      if $debug { out::message("nodes_refresh yaml: ${nodes_refresh}") }
+      unless $nodes_refresh.empty {
+        $pdb = "facts[certname] { name = \"${facts_lookup_field}\" and 
+                                  value ~ \"(?i)${nodes_refresh.map |$k| { "${k}$" }.join('|')}\"
+                                  limit ${$puppetdb_query_limit} }"
+        if $debug == true { out::message("pdb: ${pdb}") }
+        $certname_refresh = puppetdb_query($pdb).map |$k| { $k['certname'] }
+        unless $certname_refresh.empty {
+          $load_r1 = run_task  (
+                      'node_info::ensure_job_run', $nodes,
+                      'ensure'          => 'present',
+                      'description'     => 'load_csv - post puppet run',
+                      'scope'           => { 'nodes' => $certname_refresh },
+                      'expected_state'  => [ 'finished', 'failed' ],
+                      'connected_only'  => true,
+                      'puppet_master'   => $nodes,
+                    )
         }
       }
     }
@@ -101,7 +99,7 @@ plan node_info::load_csv (
                                     csv_filename  => $csv_filename,
                                     key_field     => $key_field,
                                     multiple      => $multiple,
-                                    load_result   => $outs_result
+                                    load_result   => $message
                                   } } }
       } else {
         $node_info_source_data = { 'node_info_source' => { $feed_type => {
@@ -110,7 +108,7 @@ plan node_info::load_csv (
                                     csv_filename  => $csv_filename,
                                     key_field     => $key_field,
                                     multiple      => $multiple,
-                                    load_result   => $outs_result
+                                    load_result   => $message
                                   } } }
       }
       file { '/etc/puppetlabs/facter/facts.d/node_info_source.yaml':
@@ -123,5 +121,5 @@ plan node_info::load_csv (
     }
   }
 
-  return $outs_result
+  return "Run succeeded: ${message}"
 }

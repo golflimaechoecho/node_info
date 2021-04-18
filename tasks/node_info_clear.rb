@@ -1,6 +1,9 @@
 #!/opt/puppetlabs/puppet/bin/ruby
 require 'rbconfig'
 
+result = {}
+result['exit_code'] = 0
+
 IS_WINDOWS = (RbConfig::CONFIG['host_os'] =~ %r{mswin|mingw|cygwin})
 
 $stdout.sync = true
@@ -11,6 +14,9 @@ node_info = if IS_WINDOWS
               '/etc/puppetlabs/facter/facts.d/node_info.yaml'
             end
 
+result['in'] = node_info
+
 File.delete(node_info) if File.exist?(node_info)
 
-puts 'Node_info fact removed from this node'
+result['out'] = 'Fact removed from this node'
+puts result.to_json

@@ -96,6 +96,22 @@
       "description": "Node group name.",
       "type": "Optional[String]"
     },
+    "id": {
+      "description": "Job Id",
+      "type": "Optional[Integer]"
+    },
+    "expected_state": {
+      "description": "Node group name.",
+      "type": "Optional[Array[Enum[ready,finished,running,failed]]]"
+    },
+    "state_wait_timeout": {
+      "description": "Wait state timeout in seconds",
+      "type": "Optional[Integer]"
+    },
+    "log_level": {
+      "description": "Puppet loglevel",
+      "type": "Optional[Enum[debug,warn,info]]"
+    },
     "puppet_master": {
       "description": "Puppet master with classifer",
       "type": "Optional[String]"
