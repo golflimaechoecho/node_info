@@ -1,6 +1,6 @@
 {
   "name": "cheehuan-node_info",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "cheehuan",
   "summary": "Prepare node fact using CSV files",
   "license": "MIT",
