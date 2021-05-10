@@ -59,7 +59,7 @@ plan node_info::load_csv (
         if $debug == true { out::message("pdb: ${pdb}") }
         $certname_refresh = puppetdb_query($pdb).map |$k| { $k['certname'] }
         unless $certname_refresh.empty {
-          $load_r1 = run_task  (
+          run_task  (
                       'node_info::ensure_job_run', $nodes,
                       'ensure'          => 'present',
                       'description'     => 'load_csv - post puppet run',

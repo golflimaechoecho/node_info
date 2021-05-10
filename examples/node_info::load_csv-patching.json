@@ -1,0 +1,7 @@
+{ 
+  "csv_filename": "/var/puppetlabs/data/node_info/in/patching.csv",
+  "feed_type": "patching",
+  "key_field": "hostname",
+  "multiple": false,
+  "skipped_field": ["hostname"]
+}

@@ -1,0 +1,4 @@
+Hostname,patch_scheduled_date,backup_plan
+tst01,2021-03-16 20:00:00 +0800,true
+tst02,2021-03-17 20:00:00 +0800,true
+tst01-win2016,2021-03-16 20:00:00 +0800,true

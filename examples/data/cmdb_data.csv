@@ -1,0 +1,4 @@
+Server Name,Role,Business Criticality,Environment,DataCenter,Location,Status,Application Name,Application Owner 1,Application Owner 2,Remark
+mom,pe_mom,1-Negligible,PROD,VM01,Singapore,Live,Puppet Enterprise,changeme01@puppet.com,changeme02@puppet.com,Puppet Infra
+tst01,tst-base,1-Negligible,UAT,VM01,Singapore,Live,Test base - RHEL family,changme01@puppet.com,changem02@puppet.com,
+tst02,tst-base,1-Negligible,UAT,VM01,Singapore,Live,Test base - Windows 2016,changme01@puppet.com,changem02@puppet.com,

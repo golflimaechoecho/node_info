@@ -3,8 +3,8 @@
 # @example
 #   include node_info
 class node_info (
-  Optional[String]  $node_info_fact         = 'node_info',
-  Optional[String]  $lookup_nodename_fact   = 'hostname',
+  Optional[String]            $node_info_fact   = 'node_info',
+  Optional[Array[String[1]]]  $lookup_facts     = [ 'hostname', 'fqdn' ]
 ) {
   # Prepare environment variable
   case $facts['kernel'] {
@@ -49,7 +49,9 @@ class node_info (
   } else {
     $last_updated = undef
   }
-  $raw_node_info = node_info($facts[$lookup_nodename_fact].downcase, $last_updated )
+
+  $facts_ids = $lookup_facts.map |$f| { if fact($f) { fact($f).downcase } else { $f } }
+  $raw_node_info = node_info($facts_ids, $last_updated )
   if $raw_node_info and !$raw_node_info.empty {
     $node_info = { $node_info_fact => merge($raw_node_info, {'last_updated' => Timestamp.new().strftime('%F %T %z', 'current')}) }
     file { $node_info_file:

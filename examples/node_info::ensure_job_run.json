@@ -1,0 +1,7 @@
+{  
+  "ensure":"present", 
+  "description" : "source_clear node info refresh run",
+  "scope": { "nodes":["tst01.vm", "gitlab.vm", "mom.vm", "tst01-win2016"]},
+  "expected_state": ["finished", "failed"],
+  "puppet_master":"mom.vm"
+}

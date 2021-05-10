@@ -1,3 +1,5 @@
 ---
 node_info::node_info_fact: node_info
-node_info::lookup_nodename_fact: hostname
+node_info::lookup_facts:
+  - hostname
+  - fqdn

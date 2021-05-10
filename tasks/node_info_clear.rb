@@ -1,5 +1,6 @@
 #!/opt/puppetlabs/puppet/bin/ruby
 require 'rbconfig'
+require 'json'
 
 result = {}
 result['exit_code'] = 0
@@ -19,4 +20,5 @@ result['in'] = node_info
 File.delete(node_info) if File.exist?(node_info)
 
 result['out'] = 'Fact removed from this node'
+
 puts result.to_json

@@ -137,13 +137,13 @@ if connected_only && scope && scope['nodes']
       result['warn'] = [ { 'nodes_unreachable' => nodes_unreachable } ]
     end
   end
+  # No exit even no connected nodes found
   if scope['nodes'].empty?
     result[:_error] = { msg:  'No connected nodes found',
                         kind: 'cheehuan-node_info/no_connected_nodes',
                         details: { nodes: scope['nodes'] } }
     result['exit_code'] = 1
     puts result.to_json
-    exit result['exit_code']
   end
 end
 

@@ -1,0 +1,1 @@
+{ "facts_list": ["node_info.cmdb"], "target_dir": "/var/puppetlabs/data/node_info/out", "debug": false }

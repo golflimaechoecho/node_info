@@ -1,0 +1,1 @@
+{"key_field": "tst01", "feed_type": "cmdb", "refresh_node_info_on_removed_source": true, "puppet_run_refreshed_nodes": false, "debug": false }

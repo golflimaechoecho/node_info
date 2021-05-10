@@ -5,7 +5,7 @@ require 'time'
 
 Puppet::Functions.create_function(:node_info) do
   dispatch :node_info do
-    param 'String', :certname
+    param 'Array[String]', :feed_ids
     optional_param 'Optional[String]', :last_updated
   end
 
@@ -16,12 +16,12 @@ Puppet::Functions.create_function(:node_info) do
   end
 
   # load file content and merge into single node_info hash bases on file_nameing <certname>_<feed_type>.<file_format> e.g mom.vm_cmdb.json
-  def node_info(certname, last_updated)
+  def node_info(feed_ids, last_updated)
     node_info_path = '/var/puppetlabs/data/node_info/validated'
-    # node_info_path = node_info_target_dir('/etc/puppetlabs/facter/facts.d/node_info_source.yaml')
     node_info = {}
 
-    node_info_files = Dir.glob("#{node_info_path}/#{certname}~*")
+    lookup_ids = feed_ids.map { |f| "#{node_info_path}/#{f}~*" }
+    node_info_files = Dir.glob(lookup_ids)
     return node_info if node_info_files.empty?
 
     if last_updated

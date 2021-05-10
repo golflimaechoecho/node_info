@@ -1,5 +1,4 @@
 #!/opt/puppetlabs/puppet/bin/ruby
-
 require 'json'
 require 'puppet'
 
@@ -44,4 +43,3 @@ else
 end
 
 puts result.to_json
-exit result['exit_code']

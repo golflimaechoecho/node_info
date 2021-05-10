@@ -12,11 +12,11 @@ A node information publisher to prepared node facts.
 
 ## Description
 
-This module prepare facts from a Puppet Server directory. You can load multiple sources `feed_type` of information, cmdb, tags, schedules, backup/snapshot thru a CSV flat files. The CSV file require a identifier `key_field` to associate with Puppet agent fact using `lookup_nodename_fact` default to `hostname`, You can uses other fact `certname`, `ipaddress` and limited to one agent fact.
+This module prepare facts from a primary Puppet server. You can load multiple sources `feed_type` of information with comma delimited values files. The CSV file require a identifier `key_field` to associate with Puppet agent fact stated in `lookup_facts` parameters. You can specify more than one fact, avoid complex lookup facts and it will increase Puppet compilation time.
 
 ## Setup
 
-Declare `node_info` class, will prepare a node_info.yaml when there any relevant data found that belong to the agents. node_info only refreshed when there was changes on sources.
+Declare `node_info` class will prepare a node_info.yaml when there any relevant data found that belong to the agents. node_info only refreshed when there was changes on sources.
 
 UNIX: `/etc/puppetlabs/facter/facts.d/node_info.yaml`
 Windows: `C:\ProgramData\PuppetLabs\puppet\cache\facts.d\node_info.yaml`
@@ -25,12 +25,14 @@ Windows: `C:\ProgramData\PuppetLabs\puppet\cache\facts.d\node_info.yaml`
 
 This module uses local module hiera in data/common.yaml. Bring custom parameter into your own control repositories or classification configuration.
 
-1. Pick a name or uses the default `node_info` in `node_info_fact`
-1. Update `lookup_nodename_fact` to associate with the `key_field` from data sources, default uses `hostname`.
+1. Pick up a unique name or uses the default `node_info` for `node_info::node_info_fact`
+1. Update `lookup_facts` to associate with the `key_field`.
 
 ```yaml
 node_info::node_info_fact: node_info
-node_info::lookup_nodename_fact: hostname
+node_info::lookup_facts:
+  - hostname
+  - virtual_info.id
 ```
 
 ### Load data
@@ -125,8 +127,8 @@ On agent, following example node_info contain 2 `feed_type` cmdb and snapshot.
 
 ## Limitation
 
-* Only support one `lookup_nodename_fact`
 * On Puppet compiler, File_sync `validated` folder require from Puppet Master.
+* Currently only tested on Primary Puppet server.
 
 ## Development
 

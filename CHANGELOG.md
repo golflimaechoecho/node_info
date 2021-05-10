@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2021-05-11 Release 0.2.3
+
+### Features 0.2.3
+
+- Improve lookup fact to matched more than one key fields.
+- include examples json params
+
 ## 2021-03-02 Release 0.2.2
 
 ### Features 0.2.2

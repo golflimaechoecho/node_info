@@ -1,0 +1,1 @@
+{"csv_filename": "in/cmdb_data.csv", "target_dir": "./validated", "err_target_dir": "./out", "key_field": "server_name"}
