@@ -29,7 +29,7 @@ plan node_info::load_csv (
                       debug = ${debug}")
 
   if $remove_existing_source_feed_type {
-    run_plan('node_info::source_clear','feed_type' => $feed_type )
+    run_plan('node_info::source_clear','feed_type' => $feed_type, 'debug' => $debug )
   }
 
   $load_r = run_task  (
