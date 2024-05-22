@@ -35,7 +35,12 @@ plan node_info::source_clear (
       $pdb = "facts[certname] { name = \"${facts_lookup_field}\" and 
                                 value ~ \"(?i)${nodes_refresh.map |$k| { "${k}$" }.join('|')}\"
                                 limit ${$puppetdb_query_limit} }"
-      $certname_refresh = puppetdb_query($pdb).map |$k| { $k['certname'] }
+      out::message($pdb)
+      $refresh_test = catch_errors() || {
+        $certname_refresh = puppetdb_query($pdb).map |$k| { $k['certname'] }
+      }
+      out::message($refresh_test)
+      fail_plan('stop here for now')
       if $debug { out::message("job_run: ${certname_refresh}") }
       unless $certname_refresh.empty {
         $load_r1 = run_task  (
