@@ -25,14 +25,16 @@ end
 
 nodes_refresh = []
 if target_dir && filename
-  remove_files_list = Dir.glob(filename).reject { |f| exclude_key_field.include?(File.basename(f)) }
-  remove_files_list.each do |f|
-    File.delete(f)
-    node = f.split('~')[0]
-    next if node.nil?
-    nodes_refresh << File.basename(node)
-    # %x([[ \`ls #{node}~*.json | wc -l\` -eq 0 ]] || touch #{node}~*.json) if refresh_node_info_on_removed_source
-    %x([[ \`find #{target_dir} -name "#{node}~*.json" | wc -l\` -eq 0 ]] || touch #{node}~*.json) if refresh_node_info_on_removed_source
+  if File.directory?(target_dir)
+    remove_files_list = Dir.glob(filename).reject { |f| exclude_key_field.include?(File.basename(f)) }
+    remove_files_list.each do |f|
+      File.delete(f)
+      node = f.split('~')[0]
+      next if node.nil?
+      nodes_refresh << File.basename(node)
+      # %x([[ \`ls #{node}~*.json | wc -l\` -eq 0 ]] || touch #{node}~*.json) if refresh_node_info_on_removed_source
+      %x([[ \`find #{target_dir} -name "#{node}~*.json" | wc -l\` -eq 0 ]] || touch #{node}~*.json) if refresh_node_info_on_removed_source
+    end
   end
   result['out'] = { 'deleted_files' => remove_files_list }
   result['data'] = { "nodes_refresh": nodes_refresh }
